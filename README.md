@@ -29,4 +29,21 @@ The project utilizes modern web technologies to create a dynamic and responsive 
 
 ## Usage
 
-1. Run the frontend:
+1. Run the client:
+    ```
+    cd client
+    npm run dev
+    ```
+2. Start the backend server:
+    ```
+    cd server
+    npm start
+    ```
+
+## Contributing
+
+Contributions are welcome! Feel free to submit issues and pull requests.
+
+## License
+
+This project is licensed under the [Apache License 2.0](https://github.com/stefutz101/wetransfer-like-app/blob/main/LICENSE).
