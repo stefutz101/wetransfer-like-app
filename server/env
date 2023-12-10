@@ -1,0 +1,7 @@
+PORT = 5000
+
+MONGO_USER = root
+MONGO_PASS = a19UhoLw7G8bHJO0
+MONGO_URI = mongodb+srv://${MONGO_USER}:${MONGO_PASS}@wemovedb.gvmsqlv.mongodb.net/?retryWrites=true&w=majority
+
+API_URL = https://localhost:5000
