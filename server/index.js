@@ -1,60 +1,65 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql');
-const multer = require('multer');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+//const multer = require('multer');
 const crypto = require('crypto');
-import { config } from 'dotenv';
+var dotenv = require('dotenv');
+var dotenvExpand = require('dotenv-expand');
 
-config();
+/* .env init */
+var myEnv = dotenv.config()
+dotenvExpand.expand(myEnv)
 
+/* Create a MongoClient with a MongoClientOptions object to set the Stable API version */
+const client = new MongoClient(process.env.MONGO_URI, {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    }
+});
+
+async function run() {
+    try {
+      // Connect the client to the server	(optional starting in v4.7)
+      await client.connect();
+      // Send a ping to confirm a successful connection
+      await client.db("admin").command({ ping: 1 });
+      console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    } finally {
+      // Ensures that the client will close when you finish/error
+      await client.close();
+    }
+}
+run().catch(console.dir);
+
+/* Express init */
 const app = express();
-const PORT = process.env.PORT || 3000;
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Create MySQL connection
-const connection = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASS,
-    database: process.env.MYSQL_DB,
-});
-
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL:', err);
-        return;
-    }
-    console.log('Connected to MySQL database');
-});
-
-// Handle POST request to '/login'
+/* Handle POST request to '/login' */
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    // Query to check user credentials
-    const query = 'SELECT * FROM users WHERE email = ?';
+    const collection = db.collection('users');
+    const user = collection.findOne({ email: email }).toArray();
 
-    connection.query(query, [email], (err, res) => {
-        if (err) {
-            console.error('Error executing MySQL query:', err);
-            res.status(500).json({ message: 'Server error' });
-            return;
-        }
+    console.log(user);
 
-        if (res.length == 1) {
-            if (res.password == password) {
-                // Successful login
-                res.status(200).json({ message: 'Login successful' });
-            }
-        } else {
-            // Failed login
-            res.status(401).json({ message: 'Invalid credentials' });
+    if (user.length == 1) {
+        const hashed_password = crypto.createHash('sha256').update(password).digest('hex');
+        if (user.password == hashed_password) {
+            // Successful login
+            res.status(200).json({ message: 'Login successful' });
         }
-    });
+    } else {
+        // Failed login
+        res.status(401).json({ message: 'Invalid credentials' });
+    }
 });
 
+/*
 // Handle POST request to '/register'
 app.post('/register', (req, res) => {
     const { username, password, email } = req.body;
@@ -140,7 +145,9 @@ app.get('/download/:id', (req, res) => {
         fileStream.pipe(res);
     });
 });
+*/
 
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}!`);
 });
