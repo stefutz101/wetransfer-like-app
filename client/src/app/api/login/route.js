@@ -17,43 +17,8 @@ const client = new MongoClient(process.env.MONGO_URI, {
     }
 });
 
-const dbName = 'WeMove'; // Replace with your database name
+const dbName = process.env.dbName; // Replace with your database name
 
-/*
-async function run() {
-    try {
-      // Connect the client to the server	(optional starting in v4.7)
-      await client.connect();
-      // Send a ping to confirm a successful connection
-      await client.db("admin").command({ ping: 1 });
-      console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } finally {
-      // Ensures that the client will close when you finish/error
-      await client.close();
-    }
-}
-run().catch(console.dir);
-*/
-/*
-export async function POST(req) {
-  const { email, password } = req.body;
-
-  const collection = db.collection('users');
-  const user = collection.findOne({ email: email }).toArray();
-
-  console.log(user);
-
-  if (user.length == 1) {
-    const hashed_password = crypto.createHash('sha256').update(password).digest('hex');
-    if (user.password == 'stef@wemove.com') {
-        // Successful login
-        return Response.json({ message: 'Login successful' })
-    }
-  } else {
-      // Failed login
-      return Response.json({ message: 'Login successful' })
-  }
-}*/
 export async function POST(request, params ) {
   const { email, password } = await request.json();
 
