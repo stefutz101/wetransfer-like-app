@@ -35,9 +35,10 @@ export async function POST(request, params ) {
 
     if (user) {
         // Check if the hashed passwords match
-        const hashed_password = crypto.createHash('sha256').update(password).digest('hex');
+        const hashed_password = crypto.createHash('sha256').update(password).digest('base64');
 
-        if (user.password === hashed_password) {
+        //if (user.password === hashed_password) {
+        if (await verify(password, user.password)) {
             // Successful login
             return Response.json({ message: 'Login successful' });
         } else {
@@ -56,4 +57,14 @@ export async function POST(request, params ) {
       // Ensure the client is closed
       await client.close();
   }
+}
+
+async function verify(password, hash) {
+    return new Promise((resolve, reject) => {
+        const [salt, key] = hash.split(":")
+        crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+            if (err) reject(err);
+            resolve(key == derivedKey.toString('hex'))
+        });
+    })
 }

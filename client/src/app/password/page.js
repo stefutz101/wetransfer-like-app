@@ -32,14 +32,28 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function Login() {
-  const handleSubmit = (event) => {
+  const [res, setRes] = useState({ message: '' });
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-      remember: data.get('remember'),
-    });
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email: data.get('email'),
+          password: data.get('password'),
+        }), // Your data to send
+      });
+
+      const responseData = await response.json();
+      setRes(responseData);
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
