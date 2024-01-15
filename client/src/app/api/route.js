@@ -44,13 +44,15 @@ export async function POST(request) {
     const buffer = Buffer.from(bytes);
 
     const uniqueId = crypto.randomBytes(16).toString('hex'); // Generate a unique ID
-
     const fileName = `${uniqueId}_${file.name}`; // Final filename
     const path = `uploads\\${fileName}`;
     await writeFile(path, buffer);
 
     const res = await uploads.insertOne({
-        url: uniqueId, 
+        url: uniqueId,
+        filename: fileName,
+        type: file.type,
+        name: file.name,
         title: title,
         description: description,
         downloads: 0,

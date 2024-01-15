@@ -1,8 +1,8 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
-//const multer = require('multer');
-const crypto = require('crypto');
 var dotenv = require('dotenv');
 var dotenvExpand = require('dotenv-expand');
+import { readFile } from 'fs/promises';
+import path from 'path';
 
 /* .env init */
 var myEnv = dotenv.config()
@@ -19,21 +19,29 @@ const client = new MongoClient(process.env.MONGO_URI, {
 
 const dbName = process.env.dbName; // Replace with your database name
 
-export async function GET(request, params ) {
-  const { id } = await params.json();
+export async function POST(request, params ) {
+  const { download } = await request.json();
 
   try {
     // Connect to the MongoDB server
     await client.connect();
-    // console.log('Connected successfully to server');
 
-    console.log(id);
     const db = client.db(dbName);
-    const uploads = db.collection('users');
+    const uploads = db.collection('uploads');
 
-    const user = await uploads.findOne({ url: id });
+    const upload = await uploads.findOne({ url: download });
 
-    
+    const filePath = upload.filename;
+
+    const buffer = await readFile(path.join(process.cwd(), '\\uploads', filePath));
+
+    const headers = new Headers();
+    headers.append('Content-Disposition', `attachment; filename="${filePath}"`);
+    headers.append('Content-Type', upload.type);
+
+    return new Response(buffer, {
+      headers,
+    });
   } catch (error) {
       // Handle any errors that occurred during the process
       console.error('An error occurred:', error);
