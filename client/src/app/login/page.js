@@ -1,6 +1,7 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -32,7 +33,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function Login() {
-  const [res, setRes] = useState({ message: '' });
+  const [res, setRes] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -49,8 +50,8 @@ export default function Login() {
         }), // Your data to send
       });
 
-      const responseData = await response.json();
-      setRes(responseData);
+      const result = await response.json();
+      setRes(result);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -74,6 +75,11 @@ export default function Login() {
           <Typography component="h1" variant="h5">
             Sign In
           </Typography>
+          {res && (
+            <Alert onClose={() => {}} severity={res.status}>
+              {res.message}
+            </Alert>
+          )}
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"

@@ -30,6 +30,10 @@ export async function POST(request, params ) {
     const db = client.db(dbName);
     const collection = db.collection('users');
 
+    if ( email === "" || password === "" ) {
+        return Response.json({ status: 'error', message: 'Please fill all the fields!' });
+    }
+
     // Find the user by email
     const user = await collection.findOne({ email: email });
 
@@ -40,19 +44,19 @@ export async function POST(request, params ) {
         //if (user.password === hashed_password) {
         if (await verify(password, user.password)) {
             // Successful login
-            return Response.json({ message: 'Login successful' });
+            return Response.json({ status: 'success', message: 'Login successful' });
         } else {
             // Password does not match
-            return Response.json({ message: 'Invalid password' });
+            return Response.json({ status: 'error', message: 'Invalid password' });
         }
     } else {
         // User not found
-        return Response.json({ message: 'User not found' });
+        return Response.json({ status: 'error', message: 'User not found' });
     }
   } catch (error) {
       // Handle any errors that occurred during the process
       console.error('An error occurred:', error);
-      return Response.error({ message: 'An error occurred during login' });
+      return Response.error({ status: 'error', message: 'An error occurred during login' });
   } finally {
       // Ensure the client is closed
       await client.close();

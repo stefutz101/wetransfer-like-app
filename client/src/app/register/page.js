@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -32,7 +33,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function Register() {
-  const [res, setRes] = useState({ message: '' });
+  const [res, setRes] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -75,6 +76,11 @@ export default function Register() {
           <Typography component="h1" variant="h5">
             Sign Up
           </Typography>
+          {res && (
+            <Alert onClose={() => {}} severity={res.status}>
+              {res.message}
+            </Alert>
+          )}
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"

@@ -32,24 +32,24 @@ export async function POST(request, params ) {
 
         // check for empty fields
         if (email === "" || password1 === "" || password2 === "") {
-            return Response.json({ message: 'Please fill all the fields!' });
+            return Response.json({ status: 'error', message: 'Please fill all the fields!' });
         }
 
         // check if email is actually an email address
         const validEmail = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g);
         if (!validEmail.test(email)) {
-            return Response.json({ message: 'Please enter a valid email address!' });
+            return Response.json({ status: 'error', message: 'Please enter a valid email address!' });
         }
 
         // check if both passwords match
         if (password1 != password2) {
-            return Response.json({ message: 'The passwords are not matching!' });
+            return Response.json({ status: 'error', message: 'The passwords are not matching!' });
         }
 
         // check if password is at least 6 chars long, contains lower, upper and numbers.
         const validPassword = new RegExp(/^(?=.*?[A-Za-z])(?=.*?[0-9]).{6,}$/g);
         if (!validPassword.test(password1)) {
-            return Response.json({ message: 'Please enter a valid password!' });
+            return Response.json({ status: 'error', message: 'Please enter a valid password!' });
         }
 
         // Find the not user is registered
@@ -63,15 +63,15 @@ export async function POST(request, params ) {
             });
 
             if (res) {
-                return Response.json({ message: 'Register successful!' });
+                return Response.json({ status: 'success', message: 'Register successful!' });
             }
         } else {
-            return Response.json({ message: 'Email already registered!' });
+            return Response.json({ status: 'error', message: 'Email already registered!' });
         }
     } catch (error) {
         // Handle any errors that occurred during the process
         console.error('An error occurred:', error);
-        return Response.error({ message: 'An error occurred during register!' });
+        return Response.error({ status: 'error', message: 'An error occurred during register!' });
     } finally {
         // Ensure the client is closed
         await client.close();
